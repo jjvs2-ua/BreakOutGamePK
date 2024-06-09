@@ -11,11 +11,9 @@ class Player(pygame.sprite.Sprite):
         self.image.fill((52, 235, 216))
 
         self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 20 ))
-
+        self.old_rect = self.rect.copy()
         self.direction  = pygame.math.Vector2()
-
         self.speed = 300
-
         self.position = pygame.math.Vector2(self.rect.topleft)
 
 
@@ -39,6 +37,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self, dt):
+        self.old_rect = self.rect.copy()
         self.input()
         self.position.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.position.x)
@@ -56,6 +55,7 @@ class Ball(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (32, 32))
 
         self.rect = self.image.get_rect(midbottom =  player.rect.midtop)
+        self.old_rect = self.rect.copy()
         self.direction  = pygame.math.Vector2((choice((1,-1)), -1))
         self.speed = 400
         self.position = pygame.math.Vector2(self.rect.topleft)
@@ -74,21 +74,55 @@ class Ball(pygame.sprite.Sprite):
             if self.rect.top < 0:
                 self.direction.y = 1
 
-    def collision(self):
+    def collision(self,direction):
         pass
+        overlap_spr = []
+        if self.rect.colliderect(self.player.rect):
+            overlap_spr.append(self.player)
+        
+        if overlap_spr:
+            if direction == 'horizontal':
+                for spr in overlap_spr:
+                    if self.rect.right >= spr.rect.left and self.old_rect.right <= spr.old_rect.left:
+                        self.rect.right = spr.rect.left
+                        self.position.x = self.rect.x
+                        self.direction.x *= -1
 
+                    if self.rect.left <= spr.rect.right and self.old_rect.left >= spr.old_rect.right:
+                        self.rect.left = spr.rect.right
+                        self.position.x = self.rect.x
+                        self.direction.x *= -1
+            if direction == 'vertical':
+                for spr in overlap_spr:
+                    if self.rect.top <= spr.rect.bottom and self.old_rect.top >= spr.old_rect.bottom:
+                        self.rect.top = spr.rect.bottom
+                        self.position.y = self.rect.y
+                        self.direction.y *= 1
+
+                    if self.rect.bottom >= spr.rect.top and self.old_rect.bottom <= spr.old_rect.top:
+                        self.rect.bottom = spr.rect.top
+                        self.position.y = self.rect.y
+                        self.direction.y *= -1              
+
+        
+ 
     def update(self,dt):
         if self.active==True:
             
             if self.direction.magnitude() != 0:
                 self.direction = self.direction.normalize()
-             
+            
+            #this rect is used to know where de ball was before all the movement
+            self.old_rect = self.rect.copy()
+            
             self.position.x += self.direction.x * self.speed * dt
             self.rect.x = round(self.position.x) 
+            self.collision('horizontal')
             self.window_collision('horizontal')
 
             self.position.y += self.direction.y * self.speed * dt
             self.rect.y  = round(self.position.y) 
+            self.collision('vertical')
             self.window_collision('vertical')
         else:
             self.rect.midbottom = self.player.rect.midtop
