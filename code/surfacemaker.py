@@ -34,8 +34,20 @@ class SurfaceMaker:
         scaled_bottom_surf = pygame.transform.scale(sides['bottom'],(bottom_width,sides['bottom'].get_height()))
         image.blit(scaled_bottom_surf,(sides['bottomleft'].get_width(),size[1] - sides['bottomleft'].get_height()))
 
-        #center color
-        
+        #left side 
+        left_height = size[1] - (sides['topleft'].get_height() + sides['bottomleft'].get_height()) 
+        scaled_left_surf = pygame.transform.scale(sides['left'],(sides['left'].get_width(),left_height))
+        image.blit(scaled_left_surf,(0,sides['topleft'].get_height()))
 
+        #right side 
+        right_height = size[1] - (sides['topright'].get_height() + sides['bottomright'].get_height()) 
+        scaled_right_surf = pygame.transform.scale(sides['right'],(sides['right'].get_width(),right_height))
+        image.blit(scaled_right_surf,(size[0] - sides['topright'].get_width(),sides['topright'].get_height()))
+
+        #center color
+        center_height = size[1] - (sides['top'].get_height() + sides['bottom'].get_height())
+        center_width = size[0] - (sides['right'].get_width() + sides['left'].get_width())
+        scaled_center = pygame.transform.scale(sides['center'],(center_width,center_height))
+        image.blit(scaled_center,sides['topleft'].get_size())
 
         return image
