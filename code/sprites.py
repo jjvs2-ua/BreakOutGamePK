@@ -4,11 +4,13 @@ from random import choice
 from settings import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self, groups, surfacemaker):
         super().__init__(groups)
 
-        self.image = pygame.Surface((WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20))
-        self.image.fill((52, 235, 216))
+        self.surfacemaker = surfacemaker
+        self.image = surfacemaker.get_surf('player', (WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20))
+        # self.image = pygame.Surface((WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20))
+       # self.image.fill((52, 235, 216))
 
         self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 20 ))
         self.old_rect = self.rect.copy()
@@ -145,9 +147,11 @@ class Ball(pygame.sprite.Sprite):
             self.position = pygame.math.Vector2(self.rect.topleft)
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self,block_type,position,groups):
+    def __init__(self,block_type,position,groups,surfacemaker):
         super().__init__(groups)
-        self.image = pygame.Surface((BLOCK_WIDTH,BLOCK_HEIGHT))
+        self.surfacemaker = surfacemaker
+        self.image = self.surfacemaker.get_surf('red', (BLOCK_WIDTH, BLOCK_HEIGHT))
+        #self.image = pygame.Surface((BLOCK_WIDTH,BLOCK_HEIGHT))
         self.rect = self.image.get_rect(topleft = position)
         self.old_rect = self.rect.copy()
 
