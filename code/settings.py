@@ -13,16 +13,13 @@ BLOCK_MAP = [
 	'            ']
 
 COLOR_LEGEND = {
-    '1' : 'blue',
-    '2' : 'green',
-    '3' : 'orange',
-    '4' : 'yellow',
-    '5' : 'red',
-    '6' : 'pink',
-    '7' : 'purple',
-    '8' : 'violet',
-    '9' : 'white',
-    '10' : 'brown',
+    '1': 'blue',
+    '2': 'green',
+    '3': 'red',
+    '4': 'orange',
+    '5': 'purple',
+    '6': 'bronce',
+    '7': 'grey',
 }
 
 GAP_SIZE = 2

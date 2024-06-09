@@ -150,7 +150,7 @@ class Block(pygame.sprite.Sprite):
     def __init__(self,block_type,position,groups,surfacemaker):
         super().__init__(groups)
         self.surfacemaker = surfacemaker
-        self.image = self.surfacemaker.get_surf('red', (BLOCK_WIDTH, BLOCK_HEIGHT))
+        self.image = self.surfacemaker.get_surf(COLOR_LEGEND[block_type], (BLOCK_WIDTH, BLOCK_HEIGHT))
         #self.image = pygame.Surface((BLOCK_WIDTH,BLOCK_HEIGHT))
         self.rect = self.image.get_rect(topleft = position)
         self.old_rect = self.rect.copy()
@@ -161,7 +161,7 @@ class Block(pygame.sprite.Sprite):
         self.health -= amount
 
         if self.health >0:
-            pass
+            self.image = self.surfacemaker.get_surf(COLOR_LEGEND[str(self.health)], (BLOCK_WIDTH, BLOCK_HEIGHT))
         else:
             self.kill()
 
