@@ -1,6 +1,6 @@
 import pygame,sys,time
 from settings import *
-from sprites import Player, Ball
+from sprites import Player, Ball, Block
 
 class Game:
     def __init__(self):
@@ -13,9 +13,12 @@ class Game:
         self.backgorund = self.create_background()
 
         self.all_sprites = pygame.sprite.Group()
+        self.block_sprites = pygame.sprite.Group()
 
         self.player = Player(self.all_sprites)
-        self.ball = Ball(self.all_sprites,self.player)
+        self.stage_setup()
+        self.ball = Ball(self.all_sprites,self.player,self.block_sprites)
+        
     
     def create_background(self):
         background_original = pygame.image.load('../graphics/other/background.jpg').convert()
@@ -24,7 +27,14 @@ class Game:
         scale_background = pygame.transform.scale(background_original,(width_w,height_w))
         return scale_background
 
-
+    def stage_setup(self):
+        for index_row,row in enumerate(BLOCK_MAP):
+            for index_col, col in enumerate(row):
+                if col != ' ':
+                    y = index_row * (BLOCK_HEIGHT + GAP_SIZE) + GAP_SIZE//2
+                    x = index_col * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE//2
+                    Block(col,(x,y),[self.all_sprites,self.block_sprites])
+        
     #game loop was partly took from https://nimbusintelligence.com
     def run(self):
         last_time = time.time()

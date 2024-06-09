@@ -44,12 +44,13 @@ class Player(pygame.sprite.Sprite):
         self.screen_constraint()
         
 class Ball(pygame.sprite.Sprite):
-    def __init__(self,groups,player):
+
+    def __init__(self,groups,player,blocks):
         super().__init__(groups)
 
         #collision
         self.player = player
-
+        self.blocks = blocks
         self.image = pygame.image.load('../graphics/other/ball.png').convert_alpha()
 
         self.image = pygame.transform.scale(self.image, (32, 32))
@@ -65,18 +66,26 @@ class Ball(pygame.sprite.Sprite):
     def window_collision(self,direction):
         if direction == 'horizontal':
             if self.rect.right > WINDOW_WIDTH:
-                self.direction.x = -1
+                self.rect.right = WINDOW_WIDTH
+                self.position.x = self.rect.x
+                self.direction.x *= -1
+
             if self.rect.left < 0:
-                self.direction.x = 1
+                self.rect.left = 0
+                self.position.x = self.rect.x
+                self.direction.x *= -1
+
         if direction == 'vertical':
             if self.rect.bottom > WINDOW_HEIGHT:
-                self.direction.y = -1
+                self.active = False
             if self.rect.top < 0:
-                self.direction.y = 1
+                self.rect.top = 0
+                self.position.y = self.rect.y
+                self.direction.y *= -1
 
     def collision(self,direction):
         pass
-        overlap_spr = []
+        overlap_spr = pygame.sprite.spritecollide(self,self.blocks,False)
         if self.rect.colliderect(self.player.rect):
             overlap_spr.append(self.player)
         
@@ -84,25 +93,32 @@ class Ball(pygame.sprite.Sprite):
             if direction == 'horizontal':
                 for spr in overlap_spr:
                     if self.rect.right >= spr.rect.left and self.old_rect.right <= spr.old_rect.left:
-                        self.rect.right = spr.rect.left
+                        self.rect.right = spr.rect.left -1
                         self.position.x = self.rect.x
                         self.direction.x *= -1
 
                     if self.rect.left <= spr.rect.right and self.old_rect.left >= spr.old_rect.right:
-                        self.rect.left = spr.rect.right
+                        self.rect.left = spr.rect.right +1
                         self.position.x = self.rect.x
                         self.direction.x *= -1
+                    
+                    if getattr(spr, 'health', None):
+                        spr.get_damage(1)
+
             if direction == 'vertical':
                 for spr in overlap_spr:
                     if self.rect.top <= spr.rect.bottom and self.old_rect.top >= spr.old_rect.bottom:
-                        self.rect.top = spr.rect.bottom
+                        self.rect.top = spr.rect.bottom +1
                         self.position.y = self.rect.y
-                        self.direction.y *= 1
+                        self.direction.y *= -1
 
                     if self.rect.bottom >= spr.rect.top and self.old_rect.bottom <= spr.old_rect.top:
-                        self.rect.bottom = spr.rect.top
+                        self.rect.bottom = spr.rect.top -1
                         self.position.y = self.rect.y
-                        self.direction.y *= -1              
+                        self.direction.y *= -1      
+
+                    if getattr(spr, 'health', None):
+                        spr.get_damage(1)        
 
         
  
@@ -128,4 +144,20 @@ class Ball(pygame.sprite.Sprite):
             self.rect.midbottom = self.player.rect.midtop
             self.position = pygame.math.Vector2(self.rect.topleft)
 
+class Block(pygame.sprite.Sprite):
+    def __init__(self,block_type,position,groups):
+        super().__init__(groups)
+        self.image = pygame.Surface((BLOCK_WIDTH,BLOCK_HEIGHT))
+        self.rect = self.image.get_rect(topleft = position)
+        self.old_rect = self.rect.copy()
+
+        self.health = int(block_type)
+    
+    def get_damage(self,amount):
+        self.health -= amount
+
+        if self.health >0:
+            pass
+        else:
+            self.kill()
 
