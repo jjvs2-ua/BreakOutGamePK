@@ -105,6 +105,20 @@ class Game:
                 projectile.kill()
                 self.laserhit_sound.play()
 
+    
+    def reset_game(self):
+        self.player.hearts = 3
+        self.all_sprites.empty()
+        self.block_sprites.empty()
+        self.upgrade_sprites.empty()
+        self.projectile_sprites.empty()
+        self.stage_setup()
+        self.player = Player(self.all_sprites, self.surfacemaker)  # Recreate the player
+        self.ball = Ball(self.all_sprites, self.player, self.block_sprites)  # Recreate the ball
+        self.can_shoot = True
+        self.shoot_time = 0
+        self.gameOverFlag = False
+
 
     #game loop was partly took from https://nimbusintelligence.com
     def run(self):
@@ -125,6 +139,8 @@ class Game:
                             self.create_projectile()
                             self.can_shoot = False
                             self.shoot_time = pygame.time.get_ticks()
+                    if self.gameOverFlag and event.key == pygame.K_RETURN:
+                        self.reset_game()
 
 
             self.display_surface.blit(self.backgorund,(0,0))
